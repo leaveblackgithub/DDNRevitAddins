@@ -139,6 +139,7 @@
     <Compile Include="Archive\Geometries\TransformExtension.cs" />
     <Compile Include="AddinLibOfFamlyParameterTransfer\FamilyParameterBase.cs" />
     <Compile Include="ARColumnToSTR.cs" />
+    <Compile Include="EllipseTo4Arcs.cs" />
     <Compile Include="ReplaceWallWithRoomSeparation.cs" />
     <Compile Include="ReplaceRoomSeparationWithWall.cs" />
     <Compile Include="FamilyParameterAssociate.cs" />
