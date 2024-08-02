@@ -1,0 +1,3 @@
+DDNRevitAddins,DDNRevitAddins.Archive.ReloadImage,com
+DDNRevitAddins,DDNRevitAddins.Archive.MultipleCut,com
+DDNRevitAddins,DDNRevitAddins.Archive.MultipleUnCut,com
