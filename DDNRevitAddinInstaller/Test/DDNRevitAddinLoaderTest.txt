@@ -1,0 +1,5 @@
+DDNRevitAddins,DDNRevitAddins.ReloadImage,com
+DDNRevitAddins,DDNRevitAddins.ReloadImage,com
+DDNRevitAddins,DDNRevitAddins.MultipleCut,com
+DDNRevitAddins,DDNRevitAddins.MultipleUnCut,com
+DDNRevitAddins2,DDNRevitAddins.MultipleUnCut,com

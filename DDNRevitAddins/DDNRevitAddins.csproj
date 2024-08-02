@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A1DD2A95-A7D9-465C-B41A-CD5865436BCF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DDNRevitAddins</RootNamespace>
+    <AssemblyName>DDNRevitAddins</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\build\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\build\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\build\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\build\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AdWindows, Version=3.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RevitApi2021.21.0.0.383\lib\net48\AdWindows.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.4.3.1\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq, Version=4.10.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\packages\Moq.4.10.1\lib\net45\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPI, Version=21.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RevitApi2021.21.0.0.383\lib\net48\RevitAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="RevitAPIUI, Version=21.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RevitApi2021.21.0.0.383\lib\net48\RevitAPIUI.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard1.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\portable-net45+win8+wp8+wpa81\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UIFramework, Version=21.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\RevitApi2021.21.0.0.383\lib\net48\UIFramework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddinLibOfFamlyParameterTransfer\FamilyInstanceSelectionFilter.cs" />
+    <Compile Include="AddinLibOfFamlyParameterTransfer\FormOfParameter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddinLibOfFamlyParameterTransfer\FormOfParameter.Designer.cs">
+      <DependentUpon>FormOfParameter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Archive\Datas\CategoriesExtension.cs" />
+    <Compile Include="Archive\Datas\CategoryExtension.cs" />
+    <Compile Include="Archive\Datas\CategoryNameMapExtension.cs" />
+    <Compile Include="Archive\Datas\DefinitionExtension.cs" />
+    <Compile Include="Archive\Datas\FamilyParameterExtension.cs" />
+    <Compile Include="Archive\Datas\FamilyParameterSetExtension.cs" />
+    <Compile Include="Archive\Datas\ParameterSetExtension.cs" />
+    <Compile Include="Archive\Elements\DetailGroupInfo.cs" />
+    <Compile Include="Archive\Elements\FamilyExtension.cs" />
+    <Compile Include="Archive\Elements\FamilyInstanceExtension.cs" />
+    <Compile Include="Archive\Elements\GroupExtension.cs" />
+    <Compile Include="Archive\Elements\GroupInfo.cs" />
+    <Compile Include="Archive\Elements\GroupTypeExtension.cs" />
+    <Compile Include="Archive\Elements\GroupTypeInfo.cs" />
+    <Compile Include="Archive\Elements\ModelGroupInfo.cs" />
+    <Compile Include="Archive\Elements\ReferenceExtension.cs" />
+    <Compile Include="Archive\Elements\TextNoteExtension.cs" />
+    <Compile Include="Archive\Environments\DbApplicationExtension.cs" />
+    <Compile Include="Archive\Environments\DbDocumentSetExtension.cs" />
+    <Compile Include="Archive\Environments\ExternalCommandBase.cs" />
+    <Compile Include="Archive\Environments\ExternalCommandProjectBase.cs" />
+    <Compile Include="Archive\Environments\AngularDimensionExtension.cs" />
+    <Compile Include="Archive\Environments\FamilyManagerExtension.cs" />
+    <Compile Include="Archive\Environments\SettingExtension.cs" />
+    <Compile Include="Archive\Geometries\ArcExtension.cs" />
+    <Compile Include="Archive\Geometries\BoundingBoxXyzExtension.cs" />
+    <Compile Include="Archive\Datas\CategoryNameSelectionFilter.cs" />
+    <Compile Include="Archive\Environments\CreateDocumentExtension.cs" />
+    <Compile Include="Archive\Environments\DbDocumentExtension.cs" />
+    <Compile Include="Archive\Elements\ElementExtension.cs" />
+    <Compile Include="Archive\Datas\ElementIdExtension.cs" />
+    <Compile Include="Archive\Environments\ExternalCommandFamilyBase.cs" />
+    <Compile Include="Archive\Geometries\CurveExtension.cs" />
+    <Compile Include="Archive\Geometries\LineExtension.cs" />
+    <Compile Include="Archive\Datas\ParameterExtension.cs" />
+    <Compile Include="Archive\Datas\ParameterMapExtension.cs" />
+    <Compile Include="Archive\Geometries\LocationExtension.cs" />
+    <Compile Include="Archive\Geometries\ObjectSnapTypeExtension.cs" />
+    <Compile Include="Archive\Geometries\PlaneExtension.cs" />
+    <Compile Include="Archive\Geometries\SketchPlaneExtension.cs" />
+    <Compile Include="Archive\Geometries\TransformExtension.cs" />
+    <Compile Include="AddinLibOfFamlyParameterTransfer\FamilyParameterBase.cs" />
+    <Compile Include="ARColumnToSTR.cs" />
+    <Compile Include="FamilyParameterAssociate.cs" />
+    <Compile Include="FamilyParameterFormulaTransfer.cs" />
+    <Compile Include="FamilyParameterInstanceToType.cs" />
+    <Compile Include="FamilyParameterRemove.cs" />
+    <Compile Include="FamilyParameterTransfer.cs" />
+    <Compile Include="FamilyParameterTransfer_New.cs" />
+    <Compile Include="FamilyParameterTypeToInstance.cs" />
+    <Compile Include="FamilyParameterValueTransfer.cs" />
+    <Compile Include="AddinLibOfFamlyParameterTransfer\FormulaInfo.cs" />
+    <Compile Include="AddinLibOfFamlyParameterTransfer\FrmParameters.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddinLibOfFamlyParameterTransfer\FrmParameters.Designer.cs">
+      <DependentUpon>FrmParameters.cs</DependentUpon>
+    </Compile>
+    <Compile Include="General\ExceptionToCancel.cs" />
+    <Compile Include="General\ExceptionToCancelContinuousTransaction.cs" />
+    <Compile Include="IsolatedAngularDimension.cs" />
+    <Compile Include="IsolatedDimensions.cs" />
+    <Compile Include="IsolatedDimensionsBase.cs" />
+    <Compile Include="IsolatedRadialDimension.cs" />
+    <Compile Include="MultipleCut.cs" />
+    <Compile Include="MultipleUnCut.cs" />
+    <Compile Include="ReflectionExtension.cs" />
+    <Compile Include="ReloadImage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Archive\Environments\SelectionExtension.cs" />
+    <Compile Include="Archive\Environments\TaskDialogExtension.cs" />
+    <Compile Include="Archive\Environments\TransactionExtension.cs" />
+    <Compile Include="Archive\Environments\ViewExtension.cs" />
+    <Compile Include="Archive\Geometries\XyzExtension.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DDNGeneralLibrary\DDNGeneralLibrary.csproj">
+      <Project>{ab1d27ed-4274-4b42-93a0-2b2a8d0bef36}</Project>
+      <Name>DDNGeneralLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Archive\packages.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AddinLibOfFamlyParameterTransfer\FormOfParameter.resx">
+      <DependentUpon>FormOfParameter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddinLibOfFamlyParameterTransfer\FrmParameters.resx">
+      <DependentUpon>FrmParameters.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

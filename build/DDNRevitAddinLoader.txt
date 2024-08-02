@@ -1,0 +1,7 @@
+DDNRevitAddins,DDNRevitAddins.ReloadImage,com
+DDNRevitAddins,DDNRevitAddins.MultipleCut,com
+DDNRevitAddins,DDNRevitAddins.MultipleUnCut,com
+DDNRevitAddins,DDNRevitAddins.FamilyParameterTransfer,com
+DDNRevitAddins,DDNRevitAddins.FamilyParameterValueTransfer,com
+DDNRevitAddins,DDNRevitAddins.FamilyParameterFormulaTransfer,com
+DDNRevitAddins,DDNRevitAddins.FamilyParameterAssociate,com
