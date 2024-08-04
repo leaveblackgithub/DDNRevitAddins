@@ -19,6 +19,8 @@ namespace DDNRevitAddins
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "temp",
                 "EllipseTo4ArcLog.txt"); // 日志文件路径
 
+        private Document _doc;
+
         #region 主函数
 
         public Result Execute(
@@ -28,7 +30,7 @@ namespace DDNRevitAddins
         {
             var uiApp = commandData.Application;
             var uiDoc = uiApp.ActiveUIDocument;
-            var doc = uiDoc.Document;
+            _doc = uiDoc.Document;
 
             try
             {
@@ -37,7 +39,7 @@ namespace DDNRevitAddins
                 if (ellipseCurve == null) return Result.Cancelled;
 
                 // 处理椭圆弧
-                HandleEllipseCurve(doc, ellipseCurve);
+                HandleEllipseCurve(ellipseCurve);
 
                 return Result.Succeeded;
             }
@@ -87,7 +89,7 @@ namespace DDNRevitAddins
 
         #region 处理椭圆弧函数 v1.0.7
 
-        private void HandleEllipseCurve(Document doc, CurveElement ellipseCurve)
+        private void HandleEllipseCurve(CurveElement ellipseCurve)
         {
             try
             {
@@ -99,24 +101,29 @@ namespace DDNRevitAddins
                 }
 
                 // 分解椭圆弧为四段弧和辅助线
-                var curves = DecomposeEllipseToArcs(ellipseCurve, doc);
+                var curves = DecomposeEllipseToArcs(ellipseCurve);
 
                 // 创建模型线以测试输出
-                using (var trans = new Transaction(doc, "Create Model Lines"))
-                {
-                    trans.Start();
-
-                    var plane = Plane.CreateByNormalAndOrigin(ellipse.Normal, ellipse.Center);
-                    var sketchPlane = SketchPlane.Create(doc, plane);
-
-                    foreach (var curve in curves) doc.Create.NewModelCurve(curve, sketchPlane);
-
-                    trans.Commit();
-                }
+                CreateArcObjects(ellipse, curves);
             }
             catch (Exception ex)
             {
                 LogError(ex);
+            }
+        }
+
+        private  void CreateArcObjects(Ellipse ellipse, List<Curve> curves)
+        {
+            using (var trans = new Transaction(_doc, "Create Model Lines"))
+            {
+                trans.Start();
+
+                var plane = Plane.CreateByNormalAndOrigin(ellipse.Normal, ellipse.Center);
+                var sketchPlane = SketchPlane.Create(_doc, plane);
+
+                foreach (var curve in curves) _doc.Create.NewModelCurve(curve, sketchPlane);
+
+                trans.Commit();
             }
         }
 
@@ -224,7 +231,7 @@ namespace DDNRevitAddins
 
         #region 分解椭圆弧为辅助线函数 v2.0.1
 
-        private List<Curve> DecomposeEllipseToArcs(CurveElement ellipseCurve, Document doc)
+        private List<Curve> DecomposeEllipseToArcs(CurveElement ellipseCurve)
         {
             var curves = new List<Curve>();
             var pts = new List<XYZ>();
