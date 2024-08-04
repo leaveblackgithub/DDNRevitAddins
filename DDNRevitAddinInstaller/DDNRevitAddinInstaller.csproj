@@ -106,10 +106,6 @@
       <Project>{ab1d27ed-4274-4b42-93a0-2b2a8d0bef36}</Project>
       <Name>DDNGeneralLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DDNRevitAddins\DDNRevitAddins.csproj">
-      <Project>{A1DD2A95-A7D9-465C-B41A-CD5865436BCF}</Project>
-      <Name>DDNRevitAddins</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="DDNRevitAddinLoader.txt">
