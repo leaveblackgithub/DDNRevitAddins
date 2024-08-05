@@ -20,6 +20,9 @@ namespace DDNRevitAddins
                 "EllipseTo4ArcLog.txt"); // 日志文件路径
 
         private Document _doc;
+        private CurveElement _ellipseCurve;
+        private EllipseInfo _ellipseInfo;
+        private Ellipse _ellipse;
 
         #region 主函数
 
@@ -35,11 +38,11 @@ namespace DDNRevitAddins
             try
             {
                 // 选择椭圆弧
-                var ellipseCurve = SelectEllipseCurve(uiDoc);
-                if (ellipseCurve == null) return Result.Cancelled;
+                _ellipseCurve = SelectEllipseCurve(uiDoc);
+                if (_ellipseCurve == null) return Result.Cancelled;
 
                 // 处理椭圆弧
-                HandleEllipseCurve(ellipseCurve);
+                HandleEllipseCurve();
 
                 return Result.Succeeded;
             }
@@ -89,22 +92,22 @@ namespace DDNRevitAddins
 
         #region 处理椭圆弧函数 v1.0.7
 
-        private void HandleEllipseCurve(CurveElement ellipseCurve)
+        private void HandleEllipseCurve()
         {
             try
             {
-                var ellipse = ellipseCurve.GeometryCurve as Ellipse;
-                if (ellipse == null)
+                _ellipse = _ellipseCurve.GeometryCurve as Ellipse;
+                if (_ellipse == null)
                 {
                     TaskDialog.Show("错误", "所选元素不是有效的椭圆弧。");
                     return;
                 }
 
                 // 分解椭圆弧为四段弧和辅助线
-                var curves = DecomposeEllipseToArcs(ellipseCurve);
+                var curves = DecomposeEllipseToArcs();
 
                 // 创建模型线以测试输出
-                CreateArcObjects(ellipse, curves);
+                CreateArcObjects(curves);
             }
             catch (Exception ex)
             {
@@ -112,13 +115,13 @@ namespace DDNRevitAddins
             }
         }
 
-        private  void CreateArcObjects(Ellipse ellipse, List<Curve> curves)
+        private void CreateArcObjects(List<Curve> curves)
         {
             using (var trans = new Transaction(_doc, "Create Model Lines"))
             {
                 trans.Start();
 
-                var plane = Plane.CreateByNormalAndOrigin(ellipse.Normal, ellipse.Center);
+                var plane = Plane.CreateByNormalAndOrigin(_ellipse.Normal, _ellipse.Center);
                 var sketchPlane = SketchPlane.Create(_doc, plane);
 
                 foreach (var curve in curves) _doc.Create.NewModelCurve(curve, sketchPlane);
@@ -131,16 +134,17 @@ namespace DDNRevitAddins
 
         #region 创建椭圆弧函数 v2.0.2
 
-        private Curve CreateEllipseCurve(EllipseInfo ellipseInfo)
+        private Curve CreateEllipseCurve()
+
         {
             // 获取椭圆信息
-            var center = ellipseInfo.Center;
-            var radiusLong = ellipseInfo.RadiusLong;
-            var radiusShort = ellipseInfo.RadiusShort;
-            var xDirection = ellipseInfo.AxisLongDirection1.Normalize();
-            var yDirection = ellipseInfo.AxisShortDirection1.Normalize();
-            var startParameter = ellipseInfo.StartParameter;
-            var endParameter = ellipseInfo.EndParameter;
+            var center = _ellipseInfo.Center;
+            var radiusLong = _ellipseInfo.RadiusLong;
+            var radiusShort = _ellipseInfo.RadiusShort;
+            var xDirection = _ellipseInfo.AxisLongDirection1.Normalize();
+            var yDirection = _ellipseInfo.AxisShortDirection1.Normalize();
+            var startParameter = _ellipseInfo.StartParameter;
+            var endParameter = _ellipseInfo.EndParameter;
 
             // 创建椭圆弧
             var ellipseArc = Ellipse.CreateCurve(center, radiusLong, radiusShort, xDirection, yDirection,
@@ -154,9 +158,9 @@ namespace DDNRevitAddins
 
         #region 获取椭圆信息函数 v2.0.0
 
-        private EllipseInfo GetEllipseInfo(CurveElement ellipseCurve)
+        private EllipseInfo GetEllipseInfo()
         {
-            var ellipse = ellipseCurve.GeometryCurve as Ellipse;
+            var ellipse = _ellipseCurve.GeometryCurve as Ellipse;
             if (ellipse == null) throw new ArgumentException("所提供的曲线不是椭圆。");
 
             var ellipseInfo = new EllipseInfo
@@ -231,28 +235,20 @@ namespace DDNRevitAddins
 
         #region 分解椭圆弧为辅助线函数 v2.0.1
 
-        private List<Curve> DecomposeEllipseToArcs(CurveElement ellipseCurve)
+        private List<Curve> DecomposeEllipseToArcs()
         {
             var curves = new List<Curve>();
             var pts = new List<XYZ>();
-            var ellipseInfo = GetEllipseInfo(ellipseCurve);
-            // curves.Add(ellipseInfo.AxisLong);
-            //
-            // curves.Add(ellipseInfo.AxisShortExtend);
-            // curves.Add(ellipseInfo.FullEllipse);
-            // curves.Add(CreateEllipseCurve(ellipseInfo));
-            var pointsCurvesF = GetPointsF(ellipseInfo);
-            // curves.AddRange(pointsCurvesF.Curves);
-            var pointsCurveO1O2 = GetPointsO1O2(ellipseInfo, pointsCurvesF);
-            // curves.AddRange(pointsCurveO1O2.Curves);
-            var pointsCurvesO3O4 = GetPointsO3O4(ellipseInfo, pointsCurveO1O2);
-            // curves.AddRange(pointsCurvesO3O4.Curves);
-            var pointsCurvesArcEndPoints = GetPointsArcEndPoints(ellipseInfo, pointsCurveO1O2, pointsCurvesO3O4);
+            _ellipseInfo = GetEllipseInfo();
+            var pointsCurvesF = GetPointsF();
+            var pointsCurveO1O2 = GetPointsO1O2(pointsCurvesF);
+            var pointsCurvesO3O4 = GetPointsO3O4(pointsCurveO1O2);
+            var pointsCurvesArcEndPoints = GetPointsArcEndPoints(pointsCurveO1O2, pointsCurvesO3O4);
             curves.AddRange(pointsCurvesArcEndPoints.Curves);
             return curves;
         }
 
-        private PointsCurves GetPointsArcEndPoints(EllipseInfo ellipseInfo, PointsCurves pointsCurveO1O2,
+        private PointsCurves GetPointsArcEndPoints(PointsCurves pointsCurveO1O2,
             PointsCurves pointsCurvesO3O4)
         {
             var pointsCurves = new PointsCurves();
@@ -276,10 +272,10 @@ namespace DDNRevitAddins
 
 
             //计算这四条线和FullEllipse的交点
-            var shortArc1End2 = GetIntersectionPoint(ellipseInfo.FullEllipse, lineO1O2b);
-            var shortArc1End1 = GetIntersectionPoint(ellipseInfo.FullEllipse, lineO1O4c);
-            var shortArc2End1 = GetIntersectionPoint(ellipseInfo.FullEllipse, lineO3O2c);
-            var shortArc2End2 = GetIntersectionPoint(ellipseInfo.FullEllipse, lineO3O4b);
+            var shortArc1End2 = GetIntersectionPoint(_ellipseInfo.FullEllipse, lineO1O2b);
+            var shortArc1End1 = GetIntersectionPoint(_ellipseInfo.FullEllipse, lineO1O4c);
+            var shortArc2End1 = GetIntersectionPoint(_ellipseInfo.FullEllipse, lineO3O2c);
+            var shortArc2End2 = GetIntersectionPoint(_ellipseInfo.FullEllipse, lineO3O4b);
             //求这4个交点在Originalellipse上的参数,如果不存在则返回NULL
 
 
@@ -296,10 +292,10 @@ namespace DDNRevitAddins
             var radiusShortArc = shortArc1End1.DistanceTo(pointO1);
             //长圆弧半径等于shortArc1End2到pointO2的距离
             var radiusLongArc = shortArc1End2.DistanceTo(pointO2);
-            var shortArcs1 = CreateArcsForEllipse(pointO1, radiusShortArc, shortArc1End1, shortArc1End2, ellipseInfo);
-            var shortArcs2 = CreateArcsForEllipse(pointO3, radiusShortArc, shortArc2End1, shortArc2End2, ellipseInfo);
-            var longArcs1 = CreateArcsForEllipse(pointO2, radiusLongArc, shortArc1End2, shortArc2End1, ellipseInfo);
-            var longArcs2 = CreateArcsForEllipse(pointO4, radiusLongArc, shortArc2End2, shortArc1End1, ellipseInfo);
+            var shortArcs1 = CreateArcsForEllipse(pointO1, radiusShortArc, shortArc1End1, shortArc1End2, _ellipseInfo);
+            var shortArcs2 = CreateArcsForEllipse(pointO3, radiusShortArc, shortArc2End1, shortArc2End2, _ellipseInfo);
+            var longArcs1 = CreateArcsForEllipse(pointO2, radiusLongArc, shortArc1End2, shortArc2End1, _ellipseInfo);
+            var longArcs2 = CreateArcsForEllipse(pointO4, radiusLongArc, shortArc2End2, shortArc1End1, _ellipseInfo);
             //将4个圆弧加入返回值
             pointsCurves.Curves.AddRange(shortArcs1);
             pointsCurves.Curves.AddRange(shortArcs2);
@@ -411,19 +407,19 @@ namespace DDNRevitAddins
             }
         }
 
-        private PointsCurves GetPointsO3O4(EllipseInfo ellipseInfo, PointsCurves pointsCurveO1O2)
+        private PointsCurves GetPointsO3O4(PointsCurves pointsCurveO1O2)
         {
             var pointsCurves = new PointsCurves();
             //提取点O1,O2
             var pointO1 = pointsCurveO1O2.Points[0];
             var pointO2 = pointsCurveO1O2.Points[1];
             //计算O1到O的方向和距离
-            var directionO1ToCenter = ellipseInfo.Center - pointO1;
+            var directionO1ToCenter = _ellipseInfo.Center - pointO1;
             //计算O3
-            var pointO3 = ellipseInfo.Center + directionO1ToCenter;
+            var pointO3 = _ellipseInfo.Center + directionO1ToCenter;
             //计算O4
-            var directionO4ToCenter = ellipseInfo.Center - pointO2;
-            var pointO4 = ellipseInfo.Center + directionO4ToCenter;
+            var directionO4ToCenter = _ellipseInfo.Center - pointO2;
+            var pointO4 = _ellipseInfo.Center + directionO4ToCenter;
             //将O3,O4加入返回值
             pointsCurves.Points.Add(pointO3);
             pointsCurves.Points.Add(pointO4);
@@ -435,7 +431,7 @@ namespace DDNRevitAddins
             return pointsCurves;
         }
 
-        private PointsCurves GetPointsO1O2(EllipseInfo ellipseInfo, PointsCurves pointsCurvesF)
+        private PointsCurves GetPointsO1O2(PointsCurves pointsCurvesF)
         {
             //以pointsCurvesF的Curve[0]为line1,做line1的中垂线，延长与长短轴分别相交，把中垂线,短轴交点O1，长轴交点O2，O1O2连线都加入返回值
             var pointsCurves = new PointsCurves();
@@ -445,16 +441,16 @@ namespace DDNRevitAddins
             //求LINE1在XY平面的法线方向
             var normalLine1 = new XYZ(-line1.Direction.Y, line1.Direction.X, 0);
             //过中点做法线方向的线，线的两端到中点距离为长轴长度。
-            var lineNormal = Line.CreateBound(midPointLine1 - normalLine1 * ellipseInfo.RadiusLong * 2,
-                midPointLine1 + normalLine1 * ellipseInfo.RadiusLong * 2);
+            var lineNormal = Line.CreateBound(midPointLine1 - normalLine1 * _ellipseInfo.RadiusLong * 2,
+                midPointLine1 + normalLine1 * _ellipseInfo.RadiusLong * 2);
             //将法线加入返回值
             pointsCurves.Curves.Add(lineNormal);
             // 求长轴和法线交点 O1
-            var intersectionO1 = GetIntersectionPoint(ellipseInfo.AxisLong as Line, lineNormal);
+            var intersectionO1 = GetIntersectionPoint(_ellipseInfo.AxisLong as Line, lineNormal);
             if (intersectionO1 != null) pointsCurves.Points.Add(intersectionO1);
 
             // 求短轴延长线和法线交点 O2
-            var intersectionO2 = GetIntersectionPoint(ellipseInfo.AxisShortExtend as Line, lineNormal);
+            var intersectionO2 = GetIntersectionPoint(_ellipseInfo.AxisShortExtend as Line, lineNormal);
             if (intersectionO2 != null) pointsCurves.Points.Add(intersectionO2);
 
             // 确保有两个交点 O1 和 O2
@@ -490,15 +486,15 @@ namespace DDNRevitAddins
         #endregion
 
 
-        private PointsCurves GetPointsF(EllipseInfo ellipseInfo)
+        private PointsCurves GetPointsF()
         {
             var pointsCurves = new PointsCurves();
-            var directionShort1ToLong1 = ellipseInfo.EndPointLong1 - ellipseInfo.EndPointShort1;
+            var directionShort1ToLong1 = _ellipseInfo.EndPointLong1 - _ellipseInfo.EndPointShort1;
             //F点为短轴端点1网长轴端点1移动长短轴半径差的距离
-            var pointF = ellipseInfo.EndPointShort1 +
-                         directionShort1ToLong1.Normalize() * (ellipseInfo.RadiusLong - ellipseInfo.RadiusShort);
+            var pointF = _ellipseInfo.EndPointShort1 +
+                         directionShort1ToLong1.Normalize() * (_ellipseInfo.RadiusLong - _ellipseInfo.RadiusShort);
             //连线长轴端点和F点
-            var lineLong1ToF = Line.CreateBound(ellipseInfo.EndPointLong1, pointF);
+            var lineLong1ToF = Line.CreateBound(_ellipseInfo.EndPointLong1, pointF);
             //把点和线加入返回值
             pointsCurves.Points.Add(pointF);
             pointsCurves.Curves.Add(lineLong1ToF);
